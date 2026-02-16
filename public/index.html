@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+    <title>Web Socket con Bun</title>
+    <link rel="shortcut icon"
+        href="https://import.cdn.thinkific.com/643563/kYKQf6voSDC8WPO4l2ug_favicon.ico"
+        type="image/x-icon">
+    <link rel="stylesheet"
+        href="css/styles.css">
+</head>
+
+<body>
+    <h1>Web Socket Client - Bun.js</h1>
+
+    <hr>
+
+    <div>
+        <h3>Estado</h3>
+        <p id="status">Conectando ... </p>
+
+        <button id="btn-connect">Connect</button>
+        <button id="btn-disconnect">Disconnect</button>
+    </div>
+
+    <div>
+        <form id="message-form"
+            class="hidden">
+            <div>
+                <h3>Nuevo mensaje</h3>
+            </div>
+            <div>
+                <input type="text"
+                    placeholder="Mensaje"
+                    id="input-message">
+            </div>
+            <button id="btn-send">
+                Enviar
+            </button>
+        </form>
+    </div>
+
+    <div>
+        <ul id="message-list"></ul>
+    </div>
+
+    <script>
+        const statusElm = document.querySelector("#status")
+        const btnConnect = document.querySelector("#btn-connect")
+        const btnDisconnect = document.querySelector("#btn-disconnect")
+        const btnSend = document.querySelector("#btn-send")
+        const inputMessage = document.querySelector("#input-message")
+        const messageList = document.querySelector("#message-list")
+        const messageForm = document.querySelector("#message-form")
+
+        /*
+        
+            ⏬   FUNCTIONS
+
+        */
+
+        const showMessageForm = (show = true) => {
+            messageForm.classList.add("hidden")
+            if (show) messageForm.classList.remove("hidden")
+        }
+
+        const showConnectBtn = (show = true) => {
+            if (show) {
+                btnConnect.classList.remove("hidden")
+                btnDisconnect.classList.add("hidden")
+                return
+            }
+            
+            btnDisconnect.classList.remove("hidden")
+            btnConnect.classList.add("hidden")
+        }
+
+        const initSocketClient = (url = "ws://localhost:3000") => {
+            /*
+                Create a new WebSocket
+
+                use client-side WebSocket class
+                which extends EventTarget (onmessage, onopen, onclose),
+            */
+            let socket = new WebSocket(url);
+
+            socket.onopen = (event) => {
+                console.log("onopen event is here:", !!event);
+                console.log("websocket client connected");
+
+                // Mostrar el formulario de carga de mensajes
+                showMessageForm()
+                showConnectBtn(false)
+                statusElm.textContent = "Conectado"
+            }
+
+            socket.onmessage = (event) => {
+                console.log("onmessage event is here:", !!event);
+                console.log("new message:", event.data);
+                socket.send("Holaaaaaaaaaaaaaaa");
+            }
+
+            socket.onerror = (event) => {
+                console.log("onerror event is here:", !!event);
+                console.error("An Error has occurred", event);
+
+                // Esconder el formulario de carga de mensajes
+                showMessageForm(false)
+                showConnectBtn()
+                statusElm.textContent = "Ocurrio un error"
+            }
+
+            socket.onclose = (event) => {
+                console.log("onclose event is here:", !!event);
+                console.log("websocket client disconnected");
+
+                // Esconder el formulario de carga de mensajes
+                showMessageForm(false)
+                showConnectBtn()
+                statusElm.textContent = "Desconectado"
+            }
+
+            return socket;
+        }
+
+        /*
+        
+        ⏬   EVENTS HANDLERS
+        
+        */
+        let socket = initSocketClient()
+
+        btnConnect.addEventListener('click', () => {
+            if (socket.readyState === WebSocket.OPEN)
+                return;
+
+            socket = initSocketClient();
+        })
+
+        btnDisconnect.addEventListener('click', () => {
+            if (socket.readyState !== WebSocket.OPEN) {
+                console.log("socket status:", socket.readyState);
+                return;
+            }
+
+            socket.close("4404", 'Not found')
+        })
+
+
+
+        // console.warn(
+        //     statusElm,
+        //     btnConnect,
+        //     btnDisconnect,
+        //     btnSend,
+        //     inputMessage,
+        //     messageList,
+        //     messageForm
+        // )
+    </script>
+</body>
+
+</html
