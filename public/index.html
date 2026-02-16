@@ -89,6 +89,10 @@
             if (socket.readyState === WebSocket.CONNECTING)
                 statusElm.textContent = "Iniciando conexión ... "
 
+            /**
+             * Fired when a connection with a WebSocket is opened. 
+             * Also available via the onopen property.
+            */
             socket.onopen = (event) => {
                 console.log("onopen event is here:", !!event);
                 console.log("websocket client connected");
@@ -101,12 +105,21 @@
                     statusElm.textContent = "Conectado"
             }
 
+            /**
+             * Fired when data is received through a WebSocket. 
+             * Also available via the onmessage property.
+            */
             socket.onmessage = (event) => {
                 console.log("onmessage event is here:", !!event);
                 console.log("new message:", event.data);
                 socket.send("Holaaaaaaaaaaaaaaa");
             }
 
+            /**
+             * Fired when a connection with a WebSocket has been closed because of an error,
+             * such as when some data couldn't be sent. 
+             * Also available via the onerror property.
+            */
             socket.onerror = (event) => {
                 console.log("onerror event is here:", !!event);
                 console.error("An Error has occurred", event);
@@ -117,6 +130,10 @@
                 statusElm.textContent = "Ocurrio un error"
             }
 
+            /**
+             * Fired when a connection with a WebSocket is closed. 
+             * Also available via the onclose property
+            */
             socket.onclose = (event) => {
                 console.log("onclose event is here:", !!event);
                 console.log("websocket client disconnected");
