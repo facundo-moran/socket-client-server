@@ -91,4 +91,4 @@ const server = Bun.serve({
 });
 
 // console.log("Server listening on:", server.url);
-console.log(`Listening on ${server.hostname}:${server.port}`);
+console.log(`Listening on ${server.hostname}:${server.port} - open your web browser`);

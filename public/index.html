@@ -20,7 +20,7 @@
 
     <div>
         <h3>Estado</h3>
-        <p id="status">Conectando ... </p>
+        <p id="status"></p>
 
         <button id="btn-connect">Connect</button>
         <button id="btn-disconnect">Disconnect</button>
@@ -61,7 +61,6 @@
             ⏬   FUNCTIONS
 
         */
-
         const showMessageForm = (show = true) => {
             messageForm.classList.add("hidden")
             if (show) messageForm.classList.remove("hidden")
@@ -73,19 +72,22 @@
                 btnDisconnect.classList.add("hidden")
                 return
             }
-            
+
             btnDisconnect.classList.remove("hidden")
             btnConnect.classList.add("hidden")
         }
 
         const initSocketClient = (url = "ws://localhost:3000") => {
             /*
-                Create a new WebSocket
+                Opening a WebSocket connection
 
                 use client-side WebSocket class
                 which extends EventTarget (onmessage, onopen, onclose),
             */
             let socket = new WebSocket(url);
+
+            if (socket.readyState === WebSocket.CONNECTING)
+                statusElm.textContent = "Iniciando conexión ... "
 
             socket.onopen = (event) => {
                 console.log("onopen event is here:", !!event);
@@ -94,7 +96,9 @@
                 // Mostrar el formulario de carga de mensajes
                 showMessageForm()
                 showConnectBtn(false)
-                statusElm.textContent = "Conectado"
+
+                if (socket.readyState === WebSocket.OPEN)
+                    statusElm.textContent = "Conectado"
             }
 
             socket.onmessage = (event) => {
@@ -120,7 +124,9 @@
                 // Esconder el formulario de carga de mensajes
                 showMessageForm(false)
                 showConnectBtn()
-                statusElm.textContent = "Desconectado"
+
+                if (socket.readyState === WebSocket.CLOSED)
+                    statusElm.textContent = "Desconectado"
             }
 
             return socket;
@@ -133,7 +139,23 @@
         */
         let socket = initSocketClient()
 
-        btnConnect.addEventListener('click', () => {
+        btnConnect.addEventListener('click', async () => {
+            /**
+             * Socket ready state
+             * 
+             * A number which is one of the four possible state constants
+             * defined on the WebSocket interface:
+             * 
+             * WebSocket.CONNECTING (0) - Socket has been created.
+             * The connection is not yet open.
+             * WebSocket.OPEN (1) The connection 
+             * is open and ready to communicate.
+             * WebSocket.CLOSING (2) The connection is in the
+             * process of closing.
+             * WebSocket.CLOSED (3) The connection is closed or
+             * couldn't be opened.
+            */
+
             if (socket.readyState === WebSocket.OPEN)
                 return;
 
@@ -141,6 +163,9 @@
         })
 
         btnDisconnect.addEventListener('click', () => {
+            if (socket.readyState === WebSocket.CLOSING)
+                statusElm.textContent = "Cerrando conexión ... "
+
             if (socket.readyState !== WebSocket.OPEN) {
                 console.log("socket status:", socket.readyState);
                 return;
