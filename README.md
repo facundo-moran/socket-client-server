@@ -1,6 +1,6 @@
 # Servidor Websocket - Bun.js
 
-- Para ejecutar en modo hot reload clona el repo e instala los modulos de node. Asegurate de tener Bun instalado en tu máquina y al finalizar ejecuta en tu terminal "bun dev". Visita localhost:3000 en el navegador.
+- Para ejecutar en modo hot reload clona el repo e instala los modulos de node. Asegurate de tener Bun instalado en tu máquina y al finalizar ejecuta en tu terminal "bun dev". Visita localhost:3000 en varias ventanas de navegador.
 
 
 To install dependencies:

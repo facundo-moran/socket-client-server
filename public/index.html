@@ -49,6 +49,21 @@
     </div>
 
     <script>
+        /*
+        
+            ⏬   VARIABLES Y CONSTANTES
+
+        */
+
+        const channelName = 'chat'
+        const serverUrl = `ws://localhost:3000?channelName=${channelName}`
+
+        /*
+        
+            ⏬   ELEMENTOS - DOM
+
+        */
+
         const statusElm = document.querySelector("#status")
         const btnConnect = document.querySelector("#btn-connect")
         const btnDisconnect = document.querySelector("#btn-disconnect")
@@ -88,7 +103,7 @@
             btnConnect.classList.add("hidden")
         }
 
-        const initSocketClient = (url = "ws://localhost:3000") => {
+        const initSocketClient = (url = serverUrl) => {
             /*
                 Opening a WebSocket connection
 

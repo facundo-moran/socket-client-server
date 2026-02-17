@@ -10,17 +10,50 @@
 // }, 5000);
 import index from '../public/index.html'
 
+type WSData = {
+  createdAt: number,
+  channelName: string
+}
+
 const server = Bun.serve({
   port: 3000,
   routes: {
     "/": index
   },
   fetch(req, server) {
+    const channelQuery = 'channelName'
+    const channelName = new URL(req.url)
+      .searchParams.get(channelQuery) || ''
+
+    // console.log({
+    //   channelName
+    // });
+
+    server.upgrade(req, {
+      // this object must conform to WSData
+      data: {
+        createdAt: Date.now(),
+        channelName,
+      },
+    });
+
+    return undefined;
+
+
+
+
+
+
+
     // upgrade the request to a WebSocket
-    if (server.upgrade(req)) {
-      return; // do not return a Response
-    }
-    return new Response("Upgrade failed", { status: 500 });
+    // if (server.upgrade(req)) {
+    // return; // do not return a Response
+    // }
+
+
+
+
+    // return new Response("Upgrade failed", { status: 500 });
   },
   /**
    * instead of using an event-based API, ServerWebSocket 
@@ -28,6 +61,10 @@ const server = Bun.serve({
    * event in Bun.serve() and it is reused for each connection.
    */
   websocket: {
+    // To strongly type ws.data, add a data property
+    // to the websocket handler object.
+    // This types ws.data across all lifecycle hooks.
+    data: {} as WSData,
     // By default, Bun will close a WebSocket connection if it
     // is idle for 120 seconds. This can be configured with the
     //  idleTimeout parameter.
@@ -41,15 +78,15 @@ const server = Bun.serve({
     //  ServerWebSocket handling the event. 
     // The ServerWebSocket class is a fast, Bun-native 
     // implementation of WebSocket with some additional features.
-    message(ws, message) { 
+    message(ws, message) {
       console.log("websocket:message ws is here", !!ws);
       console.log("websocket:message new message", message);
-      
+
       // console.log({
-        //   ws,
-        //   message
+        // ws,
+      //   message
       // });
-      
+
       ws.send(String(message).toUpperCase());
 
       /**
@@ -59,12 +96,12 @@ const server = Bun.serve({
        * ws.send(new Uint8Array([1, 2, 3])); // TypedArray | 
        * DataView
       */
-      
+
     }, // a message is received
-    open(ws) { 
+    open(ws) {
       console.log("websocket:open ws is here", !!ws);
       console.log("websocket:open new client connected");
-      
+
       /**
        * -1 — The message was enqueued but there is backpressure
        * 0 — The message was dropped due to a connection issue
@@ -72,9 +109,9 @@ const server = Bun.serve({
        * 
        * "Idle" means not active, not in use, or not working.
       */
-    //  const sendResult = ws.send("Bienvenido al mejor servidor del mundo!");
-     // console.log("Desde el server le envie un msj y resulto:", sendResult);
-     
+      //  const sendResult = ws.send("Bienvenido al mejor servidor del mundo!");
+      // console.log("Desde el server le envie un msj y resulto:", sendResult);
+
       /**
        * NOTA: con ws.send enviamos mensaje individual al cliente actual.
        * 
@@ -96,7 +133,7 @@ const server = Bun.serve({
       server.publish("chat", "un usuario entró al chat");
 
     }, // a socket is opened
-    close(ws, code, message) { 
+    close(ws, code, message) {
       console.log("websocket:close ws is here", !!ws);
       console.log("websocket:close message is here", !!message);
       console.log("websocket:close client disconnected", code, message);
@@ -104,13 +141,13 @@ const server = Bun.serve({
       ws.unsubscribe("chat");
 
       server.publish("chat", "un usuario abandonó el chat");
-      
+
       // console.log({
       //   ws,
       //   code,
       //   message
       // });
-      
+
     }, // a socket is closed
     // drain(ws) { }, // the socket is ready to receive more data
   }, // handlers
