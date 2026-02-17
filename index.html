@@ -60,6 +60,18 @@
 
         /*
         
+            ⏬   ESTRUCTURAS
+
+        */
+        // Datos para las cookies
+        const session = {
+            id: 1,
+            sessionId: 'abc123'
+        }
+        const jwt = 'un-token-jwt'
+
+        /*
+        
             ⏬   ELEMENTOS - DOM
 
         */
@@ -237,6 +249,14 @@
             socket.send(msg);
         })
 
+        /*
+        
+            ⏬   COOKIES (Application/Cookies)
+
+        */
+
+        document.cookie = `Session=${JSON.stringify(session)}`
+        document.cookie = `X-Token=${jwt}`
 
         // console.warn(
         //     statusElm,

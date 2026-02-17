@@ -12,7 +12,14 @@ import index from '../index.html'
 
 type WSData = {
   createdAt: number,
-  channelName: string
+  channelName: string,
+  jwt: string | null,
+  session: SessionData | null,
+}
+
+type SessionData = {
+  id: number,
+  sessionId: string
 }
 
 const server = Bun.serve({
@@ -29,29 +36,41 @@ const server = Bun.serve({
     //   channelName
     // });
 
+    // COOKIES
+    // CookieMap provides a Map-like interface 
+    // for working with collections of cookies.
+    // It implements the Iterable interface, allowing you to
+    // use it with for...of loops and other iteration methods.
+    const cookies = new Bun.CookieMap(req.headers.get("cookie")!);
+
+    if (!cookies.has("Session") || !cookies.has("X-Token"))
+      return;
+
+    // Get a specific cookie
+    const jwtCookie = cookies.get("X-Token");
+    const sessionCookie = JSON.parse(String(cookies.get("Session")));
+
+    console.log({
+      jwtCookie,
+      sessionCookie
+    });
+
     server.upgrade(req, {
       // this object must conform to WSData
       data: {
         createdAt: Date.now(),
         channelName,
+        jwt: jwtCookie,
+        session: sessionCookie
       },
     });
 
     return undefined;
 
-
-
-
-
-
-
     // upgrade the request to a WebSocket
     // if (server.upgrade(req)) {
     // return; // do not return a Response
     // }
-
-
-
 
     // return new Response("Upgrade failed", { status: 500 });
   },
@@ -82,10 +101,10 @@ const server = Bun.serve({
       console.log("websocket:message ws is here", !!ws);
       console.log("websocket:message new message", message);
 
-      // console.log({
-        // ws,
-      //   message
-      // });
+      console.log({
+        ws,
+        //   message
+      });
 
       ws.send(String(message).toUpperCase());
 

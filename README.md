@@ -29,3 +29,4 @@ References:
 - [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 - [Bun windows installation](https://bun.com/docs/installation#windows)
 - [Bun WebSockets](https://bun.com/docs/runtime/http/websockets#an-api-designed-for-speed)
+- [Bun Cookies](https://bun.com/docs/runtime/cookies)
