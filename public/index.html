@@ -34,6 +34,7 @@
             </div>
             <div>
                 <input type="text"
+                    maxlength="50"
                     placeholder="Mensaje"
                     id="input-message">
             </div>
@@ -61,6 +62,16 @@
             ⏬   FUNCTIONS
 
         */
+
+        const createMessageItem = (msg = "") => {
+            if (!msg) return null;
+            const li = document.createElement('li')
+
+            li.textContent = msg;
+
+            return li;
+        }
+
         const showMessageForm = (show = true) => {
             messageForm.classList.add("hidden")
             if (show) messageForm.classList.remove("hidden")
@@ -110,9 +121,10 @@
              * Also available via the onmessage property.
             */
             socket.onmessage = (event) => {
+                const msg = String(event.data).trim();
                 console.log("onmessage event is here:", !!event);
-                console.log("new message:", event.data);
-                socket.send("Holaaaaaaaaaaaaaaa");
+                console.log("new message:", msg);   
+                messageList.appendChild(createMessageItem(msg))
             }
 
             /**
@@ -188,9 +200,27 @@
                 return;
             }
 
+            messageList.innerHTML = '';
+
             socket.close("4404", 'Not found')
         })
 
+        messageForm.addEventListener('submit', evt => {
+            // tells the user agent that the event is being
+            // explicitly handled, so its default action, such
+            // as page scrolling, link navigation, or pasting
+            // text, should not be taken.
+            evt.preventDefault();
+
+            let msg = inputMessage.value;
+            inputMessage.value = "";
+
+            if (!msg) return;
+
+            msg = String(msg).trim().substring(0,50);
+
+            socket.send(msg);
+        })
 
 
         // console.warn(

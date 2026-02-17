@@ -49,6 +49,8 @@ const server = Bun.serve({
         //   ws,
         //   message
       // });
+      
+      ws.send(String(message).toUpperCase());
 
       /**
        * ws.send(message); // echo back the message
@@ -70,15 +72,39 @@ const server = Bun.serve({
        * 
        * "Idle" means not active, not in use, or not working.
       */
-     const sendResult = ws.send("Hello world");
+    //  const sendResult = ws.send("Bienvenido al mejor servidor del mundo!");
      // console.log("Desde el server le envie un msj y resulto:", sendResult);
      
+      /**
+       * NOTA: con ws.send enviamos mensaje individual al cliente actual.
+       * 
+       *  probamos ws.publish para publicar un mensaje a una sala de chat
+       *  para eso debemos suscribir a este cliente a un canal, 
+       *  tambien debemos identificar al canal con un nombre.
+       * 
+       *  Una vez suscritos a un canal podemos publicar mensajes
+       *  para los demas subscriptores.
+       */
+      ws.subscribe("chat")
+
+      /**
+       *  publish() envia un mensaje a todos los miembros de
+       *  un canal excepto el miembro que llamo a la funcion,
+       *  para enviar un mensajes a todos los subscriptores, se
+       *  usa .publish() desde la instancia del servidor
+       */
+      server.publish("chat", "un usuario entró al chat");
+
     }, // a socket is opened
     close(ws, code, message) { 
       console.log("websocket:close ws is here", !!ws);
       console.log("websocket:close message is here", !!message);
       console.log("websocket:close client disconnected", code, message);
 
+      ws.unsubscribe("chat");
+
+      server.publish("chat", "un usuario abandonó el chat");
+      
       // console.log({
       //   ws,
       //   code,
