@@ -8,7 +8,7 @@
 //   clearInterval(interval);
 //   console.log("Goodbye!");
 // }, 5000);
-import index from '../public/index.html'
+import index from '../index.html'
 
 type WSData = {
   createdAt: number,
